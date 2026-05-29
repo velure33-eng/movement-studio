@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Movement Studio</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300,0,0&display=swap" rel="stylesheet" />
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/framer-motion@11.11.17/dist/framer-motion.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+  tailwind.config = {
+      theme: {
+            extend: {
+                    fontFamily: {
+                              heading: ['"Instrument Serif"', 'serif'],
+                                        body: ['"Barlow"', 'sans-serif'],
+                                                },
+                                                        borderRadius: { DEFAULT: '9999px' },
+                                                              },
+                                                                  },
+                                                                    };
+                                                                    </script>
+                                                                    <style>
+                                                                      :root { color-scheme: dark; }
+                                                                        html { scroll-behavior: smooth; }
+                                                                          body { margin:0; background:#000; color:#fff; font-family:'Barlow',sans-serif; font-weight:300; -webkit-font-smoothing:antialiased; overflow-x:hidden; }
+                                                                            .font-heading { font-family:'Instrument Serif',serif; }
+                                                                              .liquid-glass { background:rgba(255,255,255,0.07); backdrop-filter:blur(18px) saturate(160%); -webkit-backdrop-filter:blur(18px) saturate(160%); border:1px solid rgba(255,255,255,0.16); box-shadow:inset 0 1px 0 rgba(255,255,255,0.28),inset 0 -1px 0 rgba(255,255,255,0.06),0 8px 32px rgba(0,0,0,0.28); }
+                                                                                .liquid-glass-strong { background:rgba(255,255,255,0.13); backdrop-filter:blur(30px) saturate(185%); -webkit-backdrop-filter:blur(30px) saturate(185%); border:1px solid rgba(255,255,255,0.26); box-shadow:inset 0 1px 0 rgba(255,255,255,0.4),inset 0 -1px 0 rgba(255,255,255,0.08),0 14px 50px rgba(0,0,0,0.4); }
+                                                                                  .material-symbols-rounded { font-family:'Material Symbols Rounded'; font-weight:normal; font-style:normal; line-height:1; letter-spacing:normal; text-transform:none; display:inline-block; white-space:nowrap; direction:ltr; -webkit-font-smoothing:antialiased; user-select:none; }
+                                                                                    ::-webkit-scrollbar{width:4px;height:4px} ::-webkit-scrollbar-track{background:transparent} ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.3);border-radius:9999px} *{scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.3) transparent}
+                                                                                      .cursor-dot,.cursor-ring{position:fixed;top:0;left:0;border-radius:9999px;pointer-events:none;z-index:9999;mix-blend-mode:difference;will-change:transform}
+                                                                                        .cursor-dot{width:8px;height:8px;background:#fff;margin:-4px 0 0 -4px}
+                                                                                          .cursor-ring{width:40px;height:40px;border:1px solid rgba(255,255,255,0.6);margin:-20px 0 0 -20px;transition:width .2s,height .2s,margin .2s,opacity .2s}
+                                                                                            .cursor-ring.is-hover{width:64px;height:64px;margin:-32px 0 0 -32px;opacity:.9}
+                                                                                              @media(hover:none),(pointer:coarse){.cursor-dot,.cursor-ring{display:none}}
+                                                                                                @media(hover:hover) and (pointer:fine){body,a,button{cursor:none}}
+                                                                                                  ::selection{background:rgba(255,255,255,0.85);color:#000}
+                                                                                                    @keyframes heroShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+                                                                                                      .hero-fallback{background:linear-gradient(120deg,#04140d,#0c3a23,#1c1206,#5a2c08,#04140d);background-size:300% 300%;animation:heroShift 18s ease infinite}
+                                                                                                        @keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+                                                                                                          @keyframes borderGlow{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+                                                                                                            .no-scroll{overflow:hidden}
+                                                                                                            </style>
+                                                                                                            </head>
+                                                                                                            <body>
+                                                                                                              <div id="root"></div>
+                                                                                                                <div class="cursor-ring" id="cursorRing"></div>
+                                                                                                                  <div class="cursor-dot" id="cursorDot"></div>
+                                                                                                                    <script>
+                                                                                                                        (async function bootstrap(){
+                                                                                                                              const files=["mvs/lib.jsx","mvs/sections-a.jsx","mvs/sections-b.jsx","mvs/sections-c.jsx","mvs/app.jsx"];
+                                                                                                                                    try{
+                                                                                                                                            const parts=await Promise.all(files.map(f=>fetch(f+"?v="+Date.now()).then(r=>{if(!r.ok)throw new Error("Failed: "+f+" ("+r.status+")");return r.text()})));
+                                                                                                                                                    const code=parts.join("\n\n");
+                                                                                                                                                            const out=Babel.transform(code,{presets:["react"],filename:"app.jsx"}).code;
+                                                                                                                                                                    (0,eval)(out);
+                                                                                                                                                                          }catch(err){
+                                                                                                                                                                                  console.error(err);
+                                                                                                                                                                                          document.getElementById("root").innerHTML='<div style="padding:40px;font-family:monospace;color:#fff">Error: '+err.message+'</div>';
+                                                                                                                                                                                                }
+                                                                                                                                                                                                    })();
+                                                                                                                                                                                                      </script>
+                                                                                                                                                                                                      </body>
+                                                                                                                                                                                                      </html>
